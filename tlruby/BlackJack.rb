@@ -277,4 +277,4 @@ mm = 3
 play_blackjack
 
 
-# in the midst of handling aces forth dealer. Almost done - some sort of issue with ace score
+# Lots of refactoring to do but it works!
