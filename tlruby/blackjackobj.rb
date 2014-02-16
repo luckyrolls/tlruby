@@ -42,10 +42,11 @@ class Player_hand < Hand # adds player specific stuff
   attr_accessor :bet
   attr_accessor :balance
   attr_accessor :debt_limit
-  def initialize bet, balance, debt_limit
+  def initialize score, bet, balance, debt_limit
     @bet = bet
     @balance = balance
     @debt_limit = debt_limit
+    super(score)
   end
 end
 
@@ -90,7 +91,7 @@ mm =  Card.new 3, "Spades"
 ff = Card.new 7, 'hearts'
 gg = Card.new 12, 'clubs'
 
-pp = Hand.new 0
+pp = Player_hand.new 0, 25, 500, 5000
 deck = Deck.new
 deck.cards = Array.new
 deck.init_deck
