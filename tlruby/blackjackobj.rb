@@ -15,27 +15,29 @@ class Card # duh
 end
 
 class Hand < Card_bunch
-
   def score
     score=0
+    ace = false
     cards.each { | card |
     if card.card_type < 11
       score = score + card.card_type
+      if card.card_type == 1
+        ace = true
+      end
     else
       score = score + 10 # so pictures only get a 10
     end
     }
+    score = score + 10 if ace == true and score < 11
     return score
     end
-
-  
 end
 
 
 
 class Deck < Card_bunch
 
-   def add_suit(deck, suit, offset)
+   def add_suit( suit, offset)
      n = 0
      until n == 13
       cards[n + offset] = Card.new n + 1, suit
@@ -44,12 +46,11 @@ class Deck < Card_bunch
    end
 
    def init_deck
-     add_suit self, 'Spades', 0
-     add_suit self, 'Hearts', 13
-    add_suit self, 'Diamonds', 26
-     add_suit self, 'Spades', 39
-    # deck = deck.sort_by { rand }
-    # return deck
+     add_suit  'Spades', 0
+     add_suit  'Hearts', 13
+     add_suit  'Diamonds', 26
+     add_suit  'Spades', 39
+     self.cards = cards.sort_by { rand }
    end
 
 =begin
