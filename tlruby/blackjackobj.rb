@@ -1,3 +1,20 @@
+
+  def output_card(card, string)
+    case card.card_type
+      when 1
+        puts string + "  Ace of " + card.suit
+      when 2...11
+        puts string + "   " + card.card_type.to_s + ' of ' + card.suit
+      when 11
+        puts string + '   Jack ' + ' of ' + card.suit
+      when 12
+        puts string + ' Queen ' + ' of ' + card.suit
+      when 13
+        puts string + ' King of ' + card.suit
+    end
+  end
+
+
 # define class
 class Card_bunch # bunch of cards, to be usd by hand and deck
   attr_accessor :cards
@@ -23,8 +40,16 @@ class Hand < Card_bunch  # Basic Hand
     @cards = []
   end
 
+  def check_blackjack
+    if cards[0].card_type == 1 or cards[1].card_type == 1
+      return true if cards[0].card_type > 10 or cards[1].card_type > 10 #check for picture
+    end
+    return false # no blackjack
+  end
+
 
   def calc_score
+    self.score = 0
     ace = false
     cards.each { | card |
     if card.card_type < 11
@@ -40,6 +65,7 @@ class Hand < Card_bunch  # Basic Hand
   end
   def get_card deck
     cards.push deck.cards.pop
+    calc_score
   end
 
 end
@@ -49,7 +75,7 @@ class Player_hand < Hand # adds player specific stuff
   attr_accessor :balance
   attr_accessor :debt_limit
   def initialize
-    @bet = 25 # default bet
+    @bet = 50 # default bet
     @balance = 5000 # starting cash
     @debt_limit = -5000 # how much you can go into debt
     @score = 0
@@ -80,10 +106,13 @@ class Deck < Card_bunch
    end
   end
 
-
-
-
-
+ while true
+   puts "enter your bet or q to quit (default is 50 or previous bet)"
+   new_bet = gets.chomp
+   if new_bet == 'q'
+      puts 'Come back and play again! '
+      break
+   end
 
 
 player  = Player_hand.new
@@ -93,22 +122,27 @@ deck.shuffle_deck
 # Lets get started with the first 2 cards #
 player.get_card deck
 dealer.get_card deck
+
 player.get_card deck
+
 dealer.get_card deck
+output_card player.cards[0], " You received a"
+output_card player.cards[1], " You received"
+puts "You have " + player.score.to_s + " points"
+output_card dealer.cards[0], " Dealer received a"
+output_card dealer.cards[1], " Dealer received a"
+puts "Dealer has " + dealer.score.to_s + " points"
+
+  player.check_blackjack
+dealer.check_blackjack
 # player.show_hand
 
-
-
-
-
-while true
-  puts "enter your bet or q to quit (default is 50 or previous bet)"
-  new_bet = gets.chomp
-  if new_bet == 'q'
-    puts 'Come back and play again! '
-    break
-  end
 end
+
+
+
+
+
 
 
 
