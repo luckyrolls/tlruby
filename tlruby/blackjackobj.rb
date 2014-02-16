@@ -14,8 +14,7 @@ class Card # duh
   end
 end
 
-class Hand < Card_bunch
-
+class Hand < Card_bunch  # Basic Hand
   attr_accessor :score
 
   def initialize (score)
@@ -23,24 +22,32 @@ class Hand < Card_bunch
   end
 
   def calc_score
-    score=0
     ace = false
     cards.each { | card |
     if card.card_type < 11
-      score =  score + card.card_type
+      self.score =  self.score + card.card_type
       if card.card_type == 1
         ace = true
       end
     else
-      score = score + 10 # so pictures only get a 10
+      self.score = self.score + 10 # so pictures only get a 10
     end
     }
- score = score + 10 if ace == true and  score < 11
-    return score
+ self.score = self.score + 10 if ace == true and  self.score < 11
+
     end
 end
 
-
+class Player_hand < Hand # adds player specific stuff
+  attr_accessor :bet
+  attr_accessor :balance
+  attr_accessor :debt_limit
+  def initialize bet, balance, debt_limit
+    @bet = bet
+    @balance = balance
+    @debt_limit = debt_limit
+  end
+end
 
 class Deck < Card_bunch
 
@@ -92,9 +99,10 @@ pp.cards = Array.new
 pp.cards[0] = mm
 pp.cards[1] = ff
 pp.cards[2] = gg
-puts pp.calc_score
+pp.calc_score
+puts pp.score
 
-# I've calculated score - need to store it in a isntance variable
+
 
 
 
