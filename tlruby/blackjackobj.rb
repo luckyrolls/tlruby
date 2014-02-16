@@ -15,12 +15,19 @@ class Card # duh
 end
 
 class Hand < Card_bunch
-  def score
+
+  attr_accessor :score
+
+  def initialize (score)
+    @score = score
+  end
+
+  def calc_score
     score=0
     ace = false
     cards.each { | card |
     if card.card_type < 11
-      score = score + card.card_type
+      score =  score + card.card_type
       if card.card_type == 1
         ace = true
       end
@@ -28,7 +35,7 @@ class Hand < Card_bunch
       score = score + 10 # so pictures only get a 10
     end
     }
-    score = score + 10 if ace == true and score < 11
+ score = score + 10 if ace == true and  score < 11
     return score
     end
 end
@@ -76,7 +83,7 @@ mm =  Card.new 3, "Spades"
 ff = Card.new 7, 'hearts'
 gg = Card.new 12, 'clubs'
 
-pp = Hand.new
+pp = Hand.new 0
 deck = Deck.new
 deck.cards = Array.new
 deck.init_deck
@@ -85,9 +92,9 @@ pp.cards = Array.new
 pp.cards[0] = mm
 pp.cards[1] = ff
 pp.cards[2] = gg
-puts pp.score
+puts pp.calc_score
 
-# Victory - just finihsed how to instantiate deck
+# I've calculated score - need to store it in a isntance variable
 
 
 
