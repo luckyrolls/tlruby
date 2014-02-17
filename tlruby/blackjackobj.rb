@@ -47,6 +47,13 @@ class Hand < Card_bunch  # Basic Hand
     return false # no blackjack
   end
 
+  def busted?
+    if score > 21
+      return true
+    end
+  end
+
+
 
   def calc_score
     self.score = 0 #
@@ -139,6 +146,24 @@ end
       return false
   end
 
+
+  def calc_winner player, dealer
+
+
+    if player.score < dealer.score
+      puts "Loser!"
+      player.balance = player.balance - player.bet
+    elsif player.score == dealer.score
+      puts 'Tie - nobody wins'
+    else puts 'You win ... you rock!'
+    player.balance = player.balance + player.bet
+    end
+  end
+
+
+# Main loop
+
+
 player  = Player_hand.new
   while true
    puts "enter your bet or q to quit (default is 50 or previous bet)"
@@ -171,12 +196,39 @@ output_card dealer.cards[1], " Dealer received a"
 puts "Dealer has " + dealer.score.to_s + " points"
 if any_blackjacks? player, dealer
   break
-else
-  mm = 3
 end
-
-
+while true # player loop
+  puts ' Would you like another card? Enter Y or N to stand'
+  resp = gets.chomp.downcase()
+  if resp != 'n'  # Start hit loop for player
+    player.get_card deck
+    output_card player.cards[player.cards.count - 1], 'you got a ' + 'and you now have ' + player.score.to_s
+    if player.busted?
+      puts 'Busted - you lose!'
+      player.balance = player.balance - player.bet
+      break
+    end
+  else
+  while true # dealer loop
+    if dealer.score > 16
+      who_won?
+      break
+    end
+    dealer.get_card deck
+    if dealer.busted?
+      puts 'Dealer busted - you win!'
+      player.balance = player.balance - player.bet
+      break
+    elsif dealer.score > 16
+      who_won?
+      break
+    end
+  end
+   mm=3
+  # end
+  end
 end
+  end
 
 
 
