@@ -49,20 +49,20 @@ class Hand < Card_bunch  # Basic Hand
 
 
   def calc_score
-    self.score = 0
-    ace = false
+    self.score = 0 #
     cards.each { | card |
     if card.card_type < 11
       self.score =  self.score + card.card_type
-      if card.card_type == 1
-        ace = true
+      if card.card_type == 1 and self.score < 12 # make the ace 10 if you can
+        self.score = self.score + 10
       end
-    else
-      self.score = self.score + 10 # so pictures only get a 10
+    elsif card.card_type > 10 # Picture card only worth 10
+      self.score = self.score + 10
     end
     }
- self.score = self.score + 10 if ace == true and  self.score < 11
   end
+
+
   def get_card deck
     cards.push deck.cards.pop
     calc_score
@@ -74,6 +74,8 @@ class Player_hand < Hand # adds player specific stuff
   attr_accessor :bet
   attr_accessor :balance
   attr_accessor :debt_limit
+  attr_accessor :score
+  attr_accessor :cards
   def initialize
     @bet = 50 # default bet
     @balance = 5000 # starting cash
@@ -102,11 +104,43 @@ class Deck < Card_bunch
      add_suit  'Hearts'
      add_suit  'Diamonds'
      add_suit  'Clubs'
+     i = 0
+     while i < 15
+       self.cards.push Card.new 1, 'fung' # put in a bunch of Aces for testing
+       i = i + 1
+     end
+
+
      self.cards = cards.sort_by { rand }
+=begin
+     self.cards.push Card.new 1, 'ten' # Debugging
+     self.cards.push Card.new 1, 'ten'
+     self.cards.push Card.new 11, 'ten'
+     self.cards.push Card.new 11, 'ten'
+=end
    end
+end
+
+  def any_blackjacks? player, dealer
+    player_bj = player.check_blackjack
+    dealer_bj = dealer.check_blackjack
+    if player_bj == true and dealer_bj == true
+      puts 'That is a push - both have blackjack'
+      return true
+    elsif player_bj == true
+      puts 'Blackjack - woohoo - you win'
+      player.balance = player.balance + player.bet
+      return true
+    elsif dealer_bj == true
+      puts ' Dealer has blackjack, you lose '
+      player.balance = player.balance - player.bet
+      return true
+    end
+      return false
   end
 
- while true
+player  = Player_hand.new
+  while true
    puts "enter your bet or q to quit (default is 50 or previous bet)"
    new_bet = gets.chomp
    if new_bet == 'q'
@@ -115,27 +149,32 @@ class Deck < Card_bunch
    end
 
 
-player  = Player_hand.new
 dealer = Hand.new
 deck = Deck.new
 deck.shuffle_deck
+player.score = 0 # re-init from prev game
+player.cards = [] # re-init form prev game
+
+i = 0
+   while i < 2  # get first 2 cards
+     player.get_card deck
+     dealer.get_card deck
+     i = i + 1
+   end
 # Lets get started with the first 2 cards #
-player.get_card deck
-dealer.get_card deck
 
-player.get_card deck
-
-dealer.get_card deck
-output_card player.cards[0], " You received a"
+output_card player.cards[0], " You received a" # a little redundant, but hardly worth another loop
 output_card player.cards[1], " You received"
 puts "You have " + player.score.to_s + " points"
 output_card dealer.cards[0], " Dealer received a"
 output_card dealer.cards[1], " Dealer received a"
 puts "Dealer has " + dealer.score.to_s + " points"
+if any_blackjacks? player, dealer
+  break
+else
+  mm = 3
+end
 
-  player.check_blackjack
-dealer.check_blackjack
-# player.show_hand
 
 end
 
@@ -148,19 +187,6 @@ end
 
 
 
-
-
-=begin
-mm =  Card.new 3, "Spades"
-ff = Card.new 7, 'hearts'
-gg = Card.new 12, 'clubs'
-pp.cards = Array.new
-pp.cards[0] = mm
-pp.cards[1] = ff
-pp.cards[2] = gg
-pp.calc_score
-puts pp.score
-=end
 
 
 
