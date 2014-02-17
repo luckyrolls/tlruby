@@ -1,18 +1,4 @@
 
-  def output_card(card, string)
-    case card.card_type
-      when 1
-        puts string + "  Ace of " + card.suit
-      when 2...11
-        puts string + "   " + card.card_type.to_s + ' of ' + card.suit
-      when 11
-        puts string + '   Jack ' + ' of ' + card.suit
-      when 12
-        puts string + ' Queen ' + ' of ' + card.suit
-      when 13
-        puts string + ' King of ' + card.suit
-    end
-  end
 
 # define class
 class Card_bunch # bunch of cards, to be usd by hand and deck
@@ -124,6 +110,21 @@ class Deck < Card_bunch
      self.cards.push Card.new 11, 'ten'
 =end
    end
+end
+
+def output_card(card, string)
+  case card.card_type
+    when 1
+      puts string + "  Ace of " + card.suit
+    when 2...11
+      puts string + "   " + card.card_type.to_s + ' of ' + card.suit
+    when 11
+      puts string + '   Jack ' + ' of ' + card.suit
+    when 12
+      puts string + ' Queen ' + ' of ' + card.suit
+    when 13
+      puts string + ' King of ' + card.suit
+  end
 end
 
   def any_blackjacks? player, dealer
