@@ -14,12 +14,10 @@
     end
   end
 
-
 # define class
 class Card_bunch # bunch of cards, to be usd by hand and deck
   attr_accessor :cards
   end
-
 
 class Card # duh
   attr_accessor :card_type
@@ -166,14 +164,13 @@ end
 
 player  = Player_hand.new
   while true
+   puts 'You have ' + player.balance.to_s +  ' dollars'
    puts "enter your bet or q to quit (default is 50 or previous bet)"
    new_bet = gets.chomp
    if new_bet == 'q'
       puts 'Come back and play again! '
       break
    end
-
-
 dealer = Hand.new
 deck = Deck.new
 deck.shuffle_deck
@@ -188,47 +185,46 @@ i = 0
    end
 # Lets get started with the first 2 cards #
 
-output_card player.cards[0], " You received a" # a little redundant, but hardly worth another loop
-output_card player.cards[1], " You received"
+output_card player.cards[0], "You received a" # a little redundant, but hardly worth another loop
+output_card player.cards[1], "You received"
 puts "You have " + player.score.to_s + " points"
-output_card dealer.cards[0], " Dealer received a"
-output_card dealer.cards[1], " Dealer received a"
+output_card dealer.cards[0], "Dealer received a"
+output_card dealer.cards[1], "Dealer received a"
 puts "Dealer has " + dealer.score.to_s + " points"
-if any_blackjacks? player, dealer
-  break
-end
-while true # player loop
+unless any_blackjacks? player, dealer #  only continue if now blackjacks
+still_playing = true
+while still_playing # player loop
   puts ' Would you like another card? Enter Y or N to stand'
   resp = gets.chomp.downcase()
   if resp != 'n'  # Start hit loop for player
     player.get_card deck
-    output_card player.cards[player.cards.count - 1], 'you got a ' + 'and you now have ' + player.score.to_s
+    output_card player.cards[player.cards.count - 1], 'you got a'
+    puts 'You now have ' + player.score.to_s + ' points!'
     if player.busted?
       puts 'Busted - you lose!'
       player.balance = player.balance - player.bet
       break
     end
   else
-  while true # dealer loop
+  while still_playing # dealer loop
     if dealer.score > 16
-      who_won?
+      calc_winner player, dealer
+      still_playing = false
       break
     end
     dealer.get_card deck
+    output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
+    puts 'Dealer now have ' + dealer.score.to_s + ' points!'
     if dealer.busted?
       puts 'Dealer busted - you win!'
-      player.balance = player.balance - player.bet
-      break
-    elsif dealer.score > 16
-      who_won?
-      break
+      player.balance = player.balance + player.bet
+      still_playing = false
     end
   end
-   mm=3
-  # end
   end
 end
-  end
+end
+end
 
 
 

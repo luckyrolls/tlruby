@@ -17,6 +17,12 @@ class Player_hand
   attr_accessor :balance
   attr_accessor :bet
 
+  module GetCard
+    def say_hello
+      puts "Hello"
+    end
+  end
+
 
   def initialize(hand1, score, ace_score, balance)
     # Instance variables
