@@ -106,8 +106,6 @@ def first_deal player_hand, deck
   output_card player_hand.hand1[0].card, player_hand.hand1[0].suit, 'You have a'
   output_card player_hand.hand1[1].card, player_hand.hand1[1].suit, 'You have a'
 
-
-
   return deck
 
 end

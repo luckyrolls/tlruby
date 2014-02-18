@@ -159,19 +159,35 @@ end
     end
   end
 
+def get_bet player
 
+puts 'You have ' + player.balance.to_s +  ' dollars'
+puts "enter your bet or q to quit (default is 50 or previous bet)"
+new_bet = gets.chomp
+if new_bet == 'q'
+  puts 'Come back and play again! '
+  return false
+end
+new_bet = gets.chomp
+if new_bet == 'q'
+  puts "CCCYYYAAAA"
+  true
+end
+if new_bet.to_i > 0
+  player.bet = player.bet + new_bet.to_i
+  puts 'Your bet is now ' + player.bet.to_s
+else
+  puts 'Your bet is still ' + player.bet.to_s
+end
+return true
+end
 # Main loop
 
 
 player  = Player_hand.new
   while true
-   puts 'You have ' + player.balance.to_s +  ' dollars'
-   puts "enter your bet or q to quit (default is 50 or previous bet)"
-   new_bet = gets.chomp
-   if new_bet == 'q'
-      puts 'Come back and play again! '
-      break
-   end
+get_bet player
+
 dealer = Hand.new
 deck = Deck.new
 deck.shuffle_deck
@@ -228,7 +244,7 @@ end
 end
 
 
-
+# jsut stuck in the betting code, need to make it work
 
 
 
