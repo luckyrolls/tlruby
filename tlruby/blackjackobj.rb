@@ -191,27 +191,63 @@ output_card dealer.cards[1], "Dealer received a"
 puts "Dealer has " + dealer.score.to_s + " points"
 end
 
+def dealer_loop dealer, player, deck
+
+still_dealing = true
+while still_dealing # dealer loop
+  if dealer.score > 16
+   calc_winner player, dealer
+   still_dealing = false
+  end
+  dealer.get_card deck
+  output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
+  puts 'Dealer now have ' + dealer.score.to_s + ' points!'
+  if dealer.busted?
+    puts 'Dealer busted - you win!'
+    player.balance = player.balance + player.bet
+    still_dealing = false
+  end
+end
+end
+
+player_loop dealer, player, deck
+while still_playing # player loop
+  puts ' Would you like another card? Enter Y or N to stand'
+  resp = gets.chomp.downcase()
+  if resp != 'n'  # Start hit loop for player
+    player.get_card deck
+    output_card player.cards[player.cards.count - 1], 'you got a'
+    puts 'You now have ' + player.score.to_s + ' points!'
+    if player.busted?
+      puts 'Busted - you lose!'
+      player.balance = player.balance - player.bet
+      break
+    end
+  else
+    dealer_loop dealer, player,  deck
+
+  end
+end
+
+
+
 
 
 # Main loop
 
 still_playing = true
 player  = Player_hand.new
-  while still_playing
+while still_playing
 if get_bet player
-
 dealer = Hand.new
 deck = Deck.new
 deck.shuffle_deck
 player.score = 0 # re-init from prev game
 player.cards = [] # re-init form prev game
 
-
 # Lets get started with the first 2 cards #
-
-    first_deal( player, dealer, deck)
-
-unless any_blackjacks? player, dealer #  only continue if now blackjacks
+first_deal( player, dealer, deck)
+unless any_blackjacks? player, dealer #  only continue if no blackjacks
 still_playing = true
 while still_playing # player loop
   puts ' Would you like another card? Enter Y or N to stand'
@@ -226,29 +262,16 @@ while still_playing # player loop
       break
     end
   else
- #   dealer_loop dealer player  deck
-  while still_playing # dealer loop
-    if dealer.score > 16
-      calc_winner player, dealer
-      still_playing = false
-      break
-    end
-    dealer.get_card deck
-    output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
-    puts 'Dealer now have ' + dealer.score.to_s + ' points!'
-    if dealer.busted?
-      puts 'Dealer busted - you win!'
-      player.balance = player.balance + player.bet
-      still_playing = false
-    end
-  end
+  dealer_loop dealer, player,  deck
+
   end
 end
 end
   else still_playing = false
 end
-
   end
+
+
 
 # just did some refactoring of main loop - something wrong now with the bet not taking hold
 
