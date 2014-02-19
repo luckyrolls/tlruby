@@ -8,7 +8,6 @@ class Card_bunch # bunch of cards, to be usd by hand and deck
 class Card # duh
   attr_accessor :card_type
   attr_accessor :suit
-
   def initialize(card_type, suit)
     # Instance variables
     @card_type  = card_type
@@ -168,25 +167,38 @@ if new_bet == 'q'
   puts 'Come back and play again! '
   return false
 end
-new_bet = gets.chomp
-if new_bet == 'q'
-  puts "CCCYYYAAAA"
-  true
-end
 if new_bet.to_i > 0
-  player.bet = player.bet + new_bet.to_i
+  player.bet = new_bet.to_i
   puts 'Your bet is now ' + player.bet.to_s
 else
   puts 'Your bet is still ' + player.bet.to_s
 end
 return true
 end
+
+def first_deal player, dealer, deck # deal first set of cards
+i = 0
+while i < 2  # get first 2 cards
+  player.get_card deck
+  dealer.get_card deck
+  i = i + 1
+end
+output_card player.cards[0], "You received a" # a little redundant, but hardly worth another loop
+output_card player.cards[1], "You received"
+puts "You have " + player.score.to_s + " points"
+output_card dealer.cards[0], "Dealer received a"
+output_card dealer.cards[1], "Dealer received a"
+puts "Dealer has " + dealer.score.to_s + " points"
+end
+
+
+
 # Main loop
 
-
+still_playing = true
 player  = Player_hand.new
-  while true
-get_bet player
+  while still_playing
+if get_bet player
 
 dealer = Hand.new
 deck = Deck.new
@@ -194,20 +206,11 @@ deck.shuffle_deck
 player.score = 0 # re-init from prev game
 player.cards = [] # re-init form prev game
 
-i = 0
-   while i < 2  # get first 2 cards
-     player.get_card deck
-     dealer.get_card deck
-     i = i + 1
-   end
+
 # Lets get started with the first 2 cards #
 
-output_card player.cards[0], "You received a" # a little redundant, but hardly worth another loop
-output_card player.cards[1], "You received"
-puts "You have " + player.score.to_s + " points"
-output_card dealer.cards[0], "Dealer received a"
-output_card dealer.cards[1], "Dealer received a"
-puts "Dealer has " + dealer.score.to_s + " points"
+    first_deal( player, dealer, deck)
+
 unless any_blackjacks? player, dealer #  only continue if now blackjacks
 still_playing = true
 while still_playing # player loop
@@ -223,6 +226,7 @@ while still_playing # player loop
       break
     end
   else
+ #   dealer_loop dealer player  deck
   while still_playing # dealer loop
     if dealer.score > 16
       calc_winner player, dealer
@@ -241,10 +245,12 @@ while still_playing # player loop
   end
 end
 end
+  else still_playing = false
 end
 
+  end
 
-# jsut stuck in the betting code, need to make it work
+# just did some refactoring of main loop - something wrong now with the bet not taking hold
 
 
 
