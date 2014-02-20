@@ -198,7 +198,7 @@ while still_dealing # dealer loop
   if dealer.score > 16
    calc_winner player, dealer
    still_dealing = false
-  end
+  else still_dealing = true
   dealer.get_card deck
   output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
   puts 'Dealer now have ' + dealer.score.to_s + ' points!'
@@ -209,8 +209,9 @@ while still_dealing # dealer loop
   end
 end
 end
-
-player_loop dealer, player, deck
+end
+def player_loop dealer, player, deck
+  still_playing = true
 while still_playing # player loop
   puts ' Would you like another card? Enter Y or N to stand'
   resp = gets.chomp.downcase()
@@ -221,14 +222,11 @@ while still_playing # player loop
     if player.busted?
       puts 'Busted - you lose!'
       player.balance = player.balance - player.bet
-      break
     end
-  else
-    dealer_loop dealer, player,  deck
-
+    else still_playing = false
   end
 end
-
+end
 
 
 
@@ -248,32 +246,18 @@ player.cards = [] # re-init form prev game
 # Lets get started with the first 2 cards #
 first_deal( player, dealer, deck)
 unless any_blackjacks? player, dealer #  only continue if no blackjacks
-still_playing = true
-while still_playing # player loop
-  puts ' Would you like another card? Enter Y or N to stand'
-  resp = gets.chomp.downcase()
-  if resp != 'n'  # Start hit loop for player
-    player.get_card deck
-    output_card player.cards[player.cards.count - 1], 'you got a'
-    puts 'You now have ' + player.score.to_s + ' points!'
-    if player.busted?
-      puts 'Busted - you lose!'
-      player.balance = player.balance - player.bet
-      break
-    end
-  else
-  dealer_loop dealer, player,  deck
+player_loop dealer, player, deck
+dealer_loop dealer, player, deck
 
-  end
-end
 end
   else still_playing = false
 end
-  end
+end
 
 
 
-# just did some refactoring of main loop - something wrong now with the bet not taking hold
+
+# in the middle of breaking out player loop with nested dealer loop - in the middle of going through player loop on hit seems to be buggy
 
 
 
