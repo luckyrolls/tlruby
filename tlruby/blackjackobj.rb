@@ -206,6 +206,7 @@ while still_dealing # dealer loop
     puts 'Dealer busted - you win!'
     player.balance = player.balance + player.bet
     still_dealing = false
+    return false
   end
 end
 end
@@ -222,6 +223,7 @@ while still_playing # player loop
     if player.busted?
       puts 'Busted - you lose!'
       player.balance = player.balance - player.bet
+      still_playing = false
     end
     else still_playing = false
   end
@@ -246,11 +248,13 @@ player.cards = [] # re-init form prev game
 # Lets get started with the first 2 cards #
 first_deal( player, dealer, deck)
 unless any_blackjacks? player, dealer #  only continue if no blackjacks
-player_loop dealer, player, deck
+if player_loop dealer, player, deck
 dealer_loop dealer, player, deck
-
+else
+  still_playing = false
 end
   else still_playing = false
+end
 end
 end
 
