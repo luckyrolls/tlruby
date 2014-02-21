@@ -171,7 +171,6 @@ def get_bet player
   else
     puts 'Your bet is still ' + player.bet.to_s
   end
-
   end
   return still_playing
 end
@@ -203,7 +202,7 @@ def dealer_loop dealer, player, deck
       still_dealing = false
     else
       still_dealing = true
-      sleep (2)
+      sleep (1)
       dealer.get_card deck
       output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
       puts 'Dealer now have ' + dealer.score.to_s + ' points!'
@@ -245,10 +244,7 @@ def player_loop (dealer, player, deck)
   return still_playing
 end
 
-
-
 # Main loop
-
 
 still_playing = true
 player = Player_hand.new
@@ -259,7 +255,6 @@ while still_playing
     deck.shuffle_deck
     player.score = 0 # re-init from prev game
     player.cards = [] # re-init form prev game
-
 # Lets get started with the first 2 cards #
     first_deal(player, dealer, deck)
     unless any_blackjacks? player, dealer #  only continue if no blackjacks
@@ -267,9 +262,8 @@ while still_playing
         output_card dealer.cards[1], "Dealer reveals a "
         puts "Dealer has " + dealer.score.to_s + " points"
         dealer_loop dealer, player, deck
-      else
       end
-    else
     end
+    else still_playing = false
   end
 end
