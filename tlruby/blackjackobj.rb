@@ -1,9 +1,9 @@
 
-
 # define class
 class Card_bunch # bunch of cards, to be usd by hand and deck
   attr_accessor :cards
-  end
+end
+
 
 class Card # duh
   attr_accessor :card_type
@@ -23,6 +23,7 @@ class Hand < Card_bunch  # Basic Hand
     @cards = []
   end
 
+
   def check_blackjack
     if cards[0].card_type == 1 or cards[1].card_type == 1
       return true if cards[0].card_type > 10 or cards[1].card_type > 10 #check for picture
@@ -37,33 +38,38 @@ class Hand < Card_bunch  # Basic Hand
   end
 
 
-
   def calc_score
     self.score = 0 #
     cards.each { | card |
-    if card.card_type < 11
-      self.score =  self.score + card.card_type
-      if card.card_type == 1 and self.score < 12 # make the ace 10 if you can
+      if card.card_type < 11
+        self.score =  self.score + card.card_type
+        if card.card_type == 1 and self.score < 12 # make the ace 10 if you can
+          self.score = self.score + 10
+        end
+      elsif card.card_type > 10 # Picture card only worth 10
         self.score = self.score + 10
       end
-    elsif card.card_type > 10 # Picture card only worth 10
-      self.score = self.score + 10
-    end
     }
   end
 
 
   def get_card deck
+    if not deck.cards.any? # when empty, reshuffle
+      deck.shuffle_deck
+      puts 'Reshuffling deck ... '
+      sleep (1)
+    end
     cards.push deck.cards.pop
     calc_score
   end
-
 end
+
+
 
 class Player_hand < Hand # adds player specific stuff
   attr_accessor :bet
   attr_accessor :balance
-  attr_accessor :debt_limit
+  attr_accessor :debt_limitcards
   attr_accessor :score
   attr_accessor :cards
   def initialize
@@ -81,34 +87,26 @@ class Deck < Card_bunch
     @cards = Array.new
   end
 
-   def add_suit suit
-     n = 0
-     until n == 13
+  def add_suit suit
+    n = 0
+    until n == 13
       self.cards.push Card.new n + 1, suit
       n= n + 1
-     end
-   end
+    end
+  end
 
-   def shuffle_deck
-     add_suit  'Spades'
-     add_suit  'Hearts'
-     add_suit  'Diamonds'
-     add_suit  'Clubs'
-     i = 0
-     while i < 15
-       self.cards.push Card.new 1, 'fung' # put in a bunch of Aces for testing
-       i = i + 1
-     end
-
-
-     self.cards = cards.sort_by { rand }
-=begin
-     self.cards.push Card.new 1, 'ten' # Debugging
-     self.cards.push Card.new 1, 'ten'
-     self.cards.push Card.new 11, 'ten'
-     self.cards.push Card.new 11, 'ten'
-=end
-   end
+  def shuffle_deck
+    add_suit  'Spades'
+    add_suit  'Hearts'
+    add_suit  'Diamonds'
+    add_suit  'Clubs'
+    i = 0
+    while i < 15
+      self.cards.push Card.new 1, 'fung' # put in a bunch of Aces for testing
+      i = i + 1
+    end
+    self.cards = cards.sort_by { rand }
+  end
 end
 
 def output_card(card, string)
@@ -126,151 +124,152 @@ def output_card(card, string)
   end
 end
 
-  def any_blackjacks? player, dealer
-    player_bj = player.check_blackjack
-    dealer_bj = dealer.check_blackjack
-    if player_bj == true and dealer_bj == true
-      puts 'That is a push - both have blackjack'
-      return true
-    elsif player_bj == true
-      puts 'Blackjack - woohoo - you win'
-      player.balance = player.balance + player.bet
-      return true
-    elsif dealer_bj == true
-      puts ' Dealer has blackjack, you lose '
-      player.balance = player.balance - player.bet
-      return true
-    end
-      return false
-  end
-
-
-  def calc_winner player, dealer
-
-
-    if player.score < dealer.score
-      puts "Loser!"
-      player.balance = player.balance - player.bet
-    elsif player.score == dealer.score
-      puts 'Tie - nobody wins'
-    else puts 'You win ... you rock!'
+def any_blackjacks? player, dealer
+  player_bj = player.check_blackjack
+  dealer_bj = dealer.check_blackjack
+  if player_bj == true and dealer_bj == true
+    puts 'That is a push - both have blackjack'
+    return true
+  elsif player_bj == true
+    puts 'Blackjack - woohoo - you win'
     player.balance = player.balance + player.bet
-    end
+    return true
+  elsif dealer_bj == true
+    puts ' Dealer has blackjack, you lose '
+    player.balance = player.balance - player.bet
+    return true
   end
-
-def get_bet player
-
-puts 'You have ' + player.balance.to_s +  ' dollars'
-puts "enter your bet or q to quit (default is 50 or previous bet)"
-new_bet = gets.chomp
-if new_bet == 'q'
-  puts 'Come back and play again! '
   return false
 end
-if new_bet.to_i > 0
-  player.bet = new_bet.to_i
-  puts 'Your bet is now ' + player.bet.to_s
-else
-  puts 'Your bet is still ' + player.bet.to_s
+
+def calc_winner player, dealer
+  if player.score < dealer.score
+    puts "Loser!"
+    player.balance = player.balance - player.bet
+  elsif player.score == dealer.score
+    puts 'Tie - nobody wins'
+  else puts 'You win ... you rock!'
+  player.balance = player.balance + player.bet
+  end
 end
-return true
+
+def get_bet player
+  still_playing  = true
+  if player.balance < -5000
+    puts 'You wallet is empty - go home!'
+    still_playing = false
+  else
+  puts 'You have ' + player.balance.to_s +  ' dollars'
+  puts "enter your bet or q to quit (default is 50 or previous bet)"
+  new_bet = gets.chomp
+  if new_bet == 'q'
+    puts 'Come back and play again! '
+   still_playing = false
+   elsif new_bet.to_i > 0
+    player.bet = new_bet.to_i
+    puts 'Your bet is now ' + player.bet.to_s
+  else
+    puts 'Your bet is still ' + player.bet.to_s
+  end
+
+  end
+  return still_playing
 end
+
+
 
 def first_deal player, dealer, deck # deal first set of cards
-i = 0
-while i < 2  # get first 2 cards
-  player.get_card deck
-  dealer.get_card deck
-  i = i + 1
+  i = 0
+  while i < 2  # get first 2 cards
+    player.get_card deck
+    dealer.get_card deck
+    i = i + 1
+  end
+  output_card player.cards[0], "You received a" # a little redundant, but hardly worth another loop
+  output_card player.cards[1], "You received"
+  puts "You have " + player.score.to_s + " points"
+  output_card dealer.cards[0], "Dealer is showing a"
+# output_card dealer.cards[1], "Dealer received a" # Only see this when testing
+# puts "Dealer has " + dealer.score.to_s + " points" # dito
 end
-output_card player.cards[0], "You received a" # a little redundant, but hardly worth another loop
-output_card player.cards[1], "You received"
-puts "You have " + player.score.to_s + " points"
-output_card dealer.cards[0], "Dealer received a"
-output_card dealer.cards[1], "Dealer received a"
-puts "Dealer has " + dealer.score.to_s + " points"
-end
+
+
 
 def dealer_loop dealer, player, deck
-
-still_dealing = true
-while still_dealing # dealer loop
-  if dealer.score > 16
-   calc_winner player, dealer
-   still_dealing = false
-  else still_dealing = true
-  dealer.get_card deck
-  output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
-  puts 'Dealer now have ' + dealer.score.to_s + ' points!'
-  if dealer.busted?
-    puts 'Dealer busted - you win!'
-    player.balance = player.balance + player.bet
-    still_dealing = false
-    return false
-  end
-end
-end
-end
-def player_loop dealer, player, deck
-  still_playing = true
-while still_playing # player loop
-  puts ' Would you like another card? Enter Y or N to stand'
-  resp = gets.chomp.downcase()
-  if resp != 'n'  # Start hit loop for player
-    player.get_card deck
-    output_card player.cards[player.cards.count - 1], 'you got a'
-    puts 'You now have ' + player.score.to_s + ' points!'
-    if player.busted?
-      puts 'Busted - you lose!'
-      player.balance = player.balance - player.bet
-      still_playing = false
+  still_dealing = true
+  while still_dealing # dealer loop
+    if dealer.score > 16
+      calc_winner player, dealer
+      still_dealing = false
+    else
+      still_dealing = true
+      sleep (2)
+      dealer.get_card deck
+      output_card dealer.cards[dealer.cards.count - 1], 'Dealer got a'
+      puts 'Dealer now have ' + dealer.score.to_s + ' points!'
+      if dealer.busted?
+        puts 'Dealer busted - you win!'
+        player.balance = player.balance + player.bet
+        still_dealing = false
+        return false
+      end
     end
-    else still_playing = false
   end
-end
+
 end
 
+
+
+def player_loop (dealer, player, deck)
+  still_playing = true
+  still_looping = true
+  while still_looping # player loop
+    puts ' Would you like another card? Enter Y or N to stand'
+    resp = gets.chomp.downcase()
+    if resp == 'y' # Start hit loop for player
+      sleep (1)
+      player.get_card deck
+      output_card player.cards[player.cards.count - 1], 'you got a'
+      puts 'You now have ' + player.score.to_s + ' points!'
+      if player.busted?
+        puts 'Busted - you lose!'
+        player.balance = player.balance - player.bet
+        still_playing = false
+        still_looping = false
+      end
+    else
+      still_looping = false
+      # game continues
+    end
+  end
+  return still_playing
+end
 
 
 
 # Main loop
 
+
 still_playing = true
-player  = Player_hand.new
+player = Player_hand.new
 while still_playing
-if get_bet player
-dealer = Hand.new
-deck = Deck.new
-deck.shuffle_deck
-player.score = 0 # re-init from prev game
-player.cards = [] # re-init form prev game
+  if get_bet player
+    dealer = Hand.new
+    deck = Deck.new
+    deck.shuffle_deck
+    player.score = 0 # re-init from prev game
+    player.cards = [] # re-init form prev game
 
 # Lets get started with the first 2 cards #
-first_deal( player, dealer, deck)
-unless any_blackjacks? player, dealer #  only continue if no blackjacks
-if player_loop dealer, player, deck
-dealer_loop dealer, player, deck
-else
-  still_playing = false
+    first_deal(player, dealer, deck)
+    unless any_blackjacks? player, dealer #  only continue if no blackjacks
+      if player_loop dealer, player, deck
+        output_card dealer.cards[1], "Dealer reveals a "
+        puts "Dealer has " + dealer.score.to_s + " points"
+        dealer_loop dealer, player, deck
+      else
+      end
+    else
+    end
+  end
 end
-  else still_playing = false
-end
-end
-end
-
-
-
-
-# in the middle of breaking out player loop with nested dealer loop - in the middle of going through player loop on hit seems to be buggy
-
-
-
-
-
-
-
-
-
-
-
-
