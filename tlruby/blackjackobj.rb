@@ -4,7 +4,6 @@ class Card_bunch # bunch of cards, to be usd by hand and deck
   attr_accessor :cards
 end
 
-
 class Card # duh
   attr_accessor :card_type
   attr_accessor :suit
@@ -37,7 +36,6 @@ class Hand < Card_bunch  # Basic Hand
     end
   end
 
-
   def calc_score
     self.score = 0 #
     cards.each { | card |
@@ -52,7 +50,6 @@ class Hand < Card_bunch  # Basic Hand
     }
   end
 
-
   def get_card deck
     if not deck.cards.any? # when empty, reshuffle
       deck.shuffle_deck
@@ -63,8 +60,6 @@ class Hand < Card_bunch  # Basic Hand
     calc_score
   end
 end
-
-
 
 class Player_hand < Hand # adds player specific stuff
   attr_accessor :bet
@@ -101,10 +96,6 @@ class Deck < Card_bunch
     add_suit  'Diamonds'
     add_suit  'Clubs'
     i = 0
-    while i < 15
-      self.cards.push Card.new 1, 'fung' # put in a bunch of Aces for testing
-      i = i + 1
-    end
     self.cards = cards.sort_by { rand }
   end
 end
