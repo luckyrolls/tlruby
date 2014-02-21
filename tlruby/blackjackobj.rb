@@ -211,9 +211,8 @@ end
 
 def player_loop (dealer, player, deck)
   still_playing = true
-  still_looping = true
   while still_looping # player loop
-    puts ' Would you like another card? Enter Y or N to stand'
+    puts 'Would you like another card? Enter Y or N to stand'
     resp = gets.chomp.downcase()
     if resp == 'y' # Start hit loop for player
       sleep (1)
