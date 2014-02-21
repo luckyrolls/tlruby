@@ -53,7 +53,7 @@ class Hand < Card_bunch  # Basic Hand
   def get_card deck
     if not deck.cards.any? # when empty, reshuffle
       deck.shuffle_deck
-      puts 'Reshuffling deck ... '
+      puts 'Shuffling deck ... '
       sleep (1)
     end
     cards.push deck.cards.pop
@@ -64,8 +64,7 @@ end
 class Player_hand < Hand # adds player specific stuff
   attr_accessor :bet
   attr_accessor :balance
-  attr_accessor :debt_limitcards
-  attr_accessor :score
+  attr_accessor :debt_limit
   attr_accessor :cards
   def initialize
     @bet = 50 # default bet
@@ -168,7 +167,7 @@ end
 
 
 
-def first_deal player, dealer, deck # deal first set of cards
+def first_deal (player, dealer, deck) # deal first set of cards
   i = 0
   while i < 2  # get first 2 cards
     player.get_card deck
@@ -239,11 +238,11 @@ end
 
 still_playing = true
 player = Player_hand.new
+deck = Deck.new
 while still_playing
   if get_bet player
     dealer = Hand.new
-    deck = Deck.new
-    deck.shuffle_deck
+  #  deck.shuffle_deck
     player.score = 0 # re-init from prev game
     player.cards = [] # re-init form prev game
 # Lets get started with the first 2 cards #
